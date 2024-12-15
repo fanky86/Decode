@@ -1,6 +1,5 @@
 # -*- coding=utf-8 -*-
 from sys import stdout
-from input as raw_input
 import subprocess as sp
 from print as print
 import os, sys, time, random, base64, marshal, getpass, re, zlib
@@ -12,6 +11,7 @@ k = '\x1b[1;33m'
 b = '\x1b[1;34m'
 bm = '\x1b[96m'
 print=""
+raw_input = input()
 try:
     from uncompyle6.main import decompile
 except Exception as e:
