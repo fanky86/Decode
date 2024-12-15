@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import sys
 import time
@@ -42,6 +43,32 @@ def choose_output_path(default_path):
     return custom_path
 
 # Fungsi Enkripsi
+def encrypt_base16(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read()
+        encrypted = base64.b16encode(content.encode()).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_enc_base16.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(f"import base64\nexec(base64.b16decode('{encrypted}').decode())")
+        print(f"{green}File encrypted and saved as {output_path}{reset}")
+    except Exception as e:
+        print(f"{red}Failed to encrypt: {e}{reset}")
+
+def encrypt_base32(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read()
+        encrypted = base64.b32encode(content.encode()).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_enc_base32.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(f"import base64\nexec(base64.b32decode('{encrypted}').decode())")
+        print(f"{green}File encrypted and saved as {output_path}{reset}")
+    except Exception as e:
+        print(f"{red}Failed to encrypt: {e}{reset}")
+
 def encrypt_base64(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -51,6 +78,33 @@ def encrypt_base64(file_path):
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(f"import base64\nexec(base64.b64decode('{encrypted}').decode())")
+        print(f"{green}File encrypted and saved as {output_path}{reset}")
+    except Exception as e:
+        print(f"{red}Failed to encrypt: {e}{reset}")
+
+def encrypt_marshal(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read()
+        compiled = compile(content, '<script>', 'exec')
+        encrypted = marshal.dumps(compiled)
+        default_output = f"{os.path.splitext(file_path)[0]}_enc_marshal.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(f"import marshal\nexec(marshal.loads({repr(encrypted)}))")
+        print(f"{green}File encrypted and saved as {output_path}{reset}")
+    except Exception as e:
+        print(f"{red}Failed to encrypt: {e}{reset}")
+
+def encrypt_zlib(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read()
+        compressed = zlib.compress(content.encode())
+        default_output = f"{os.path.splitext(file_path)[0]}_enc_zlib.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(f"import zlib\nexec(zlib.decompress({repr(compressed)}).decode())")
         print(f"{green}File encrypted and saved as {output_path}{reset}")
     except Exception as e:
         print(f"{red}Failed to encrypt: {e}{reset}")
@@ -88,13 +142,25 @@ def decrypt_mzb(file_path):
 def encryption_menu():
     clear()
     print(f"{cyan}Encryptor Menu{reset}")
-    print("[1] Encrypt Base64")
-    print("[2] Encrypt Marshal + Zlib + Base64")
+    print("[1] Encrypt Base16")
+    print("[2] Encrypt Base32")
+    print("[3] Encrypt Base64")
+    print("[4] Encrypt Marshal")
+    print("[5] Encrypt Zlib")
+    print("[6] Encrypt Marshal + Zlib + Base64")
     print("[0] Back")
     choice = input("Choose an option: ")
     if choice == "1":
-        encrypt_base64(input("Enter the file path: "))
+        encrypt_base16(input("Enter the file path: "))
     elif choice == "2":
+        encrypt_base32(input("Enter the file path: "))
+    elif choice == "3":
+        encrypt_base64(input("Enter the file path: "))
+    elif choice == "4":
+        encrypt_marshal(input("Enter the file path: "))
+    elif choice == "5":
+        encrypt_zlib(input("Enter the file path: "))
+    elif choice == "6":
         encrypt_mzb(input("Enter the file path: "))
     elif choice == "0":
         main_menu()
