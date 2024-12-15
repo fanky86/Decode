@@ -1,7 +1,6 @@
 # -*- coding=utf-8 -*-
 from sys import stdout
 import subprocess as sp
-from print as print
 import os, sys, time, random, base64, marshal, getpass, re, zlib
 m = '\x1b[1;91m'
 u = '\x1b[1;95m'
