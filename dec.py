@@ -5,17 +5,15 @@ import time
 import base64
 import marshal
 import zlib
-from py_compile import compile
+from rich.console import Console
 
 # Warna terminal
-red = '\033[1;91m'
-green = '\033[1;92m'
-yellow = '\033[1;93m'
-blue = '\033[1;94m'
-magenta = '\033[1;95m'
-cyan = '\033[1;96m'
-white = '\033[1;97m'
+P2 = '\033[1;92m'
+H2 = '\033[1;96m'
+K2 = '\033[1;93m'
 reset = '\033[0m'
+
+console = Console()
 
 # Fungsi untuk teks dengan animasi
 def delay_print(text, delay=0.01):
@@ -31,18 +29,18 @@ def clear():
 
 # Fungsi untuk memilih lokasi output
 def choose_output_path(default_path):
-    print(f"{yellow}Default output path: {default_path}{reset}")
-    custom_path = input("Enter custom output path or press Enter to use default: ").strip()
+    console.print(f"{H2}Default output path: {P2}{default_path}{reset}")
+    custom_path = input(f"{H2}Enter custom output path or press Enter to use default: ").strip()
     if not custom_path:
         custom_path = default_path
     try:
         # Memastikan folder output ada
         os.makedirs(os.path.dirname(custom_path), exist_ok=True)
     except Exception as e:
-        print(f"{red}Error creating directory: {e}{reset}")
+        console.print(f"{H2}Error creating directory: {e}{reset}")
     return custom_path
 
-# Fungsi Enkripsi
+# Fungsi Enkripsi Base16
 def encrypt_base16(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -52,10 +50,11 @@ def encrypt_base16(file_path):
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(f"import base64\nexec(base64.b16decode('{encrypted}').decode())")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
+        console.print(f"{H2}• {P2}File encrypted and saved as {K2} {output_path}{reset}")
     except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to encrypt: {e}{reset}")
 
+# Fungsi Enkripsi Base32
 def encrypt_base32(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -65,10 +64,11 @@ def encrypt_base32(file_path):
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(f"import base64\nexec(base64.b32decode('{encrypted}').decode())")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
+        console.print(f"{H2}• {P2}File encrypted and saved as {K2} {output_path}{reset}")
     except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to encrypt: {e}{reset}")
 
+# Fungsi Enkripsi Base64
 def encrypt_base64(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -78,24 +78,11 @@ def encrypt_base64(file_path):
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(f"import base64\nexec(base64.b64decode('{encrypted}').decode())")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
+        console.print(f"{H2}• {P2}File encrypted and saved as {K2} {output_path}{reset}")
     except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to encrypt: {e}{reset}")
 
-def encrypt_marshal(file_path):
-    try:
-        with open(file_path, 'r') as f:
-            content = f.read()
-        compiled = compile(content, '<script>', 'exec')
-        encrypted = marshal.dumps(compiled)
-        default_output = f"{os.path.splitext(file_path)[0]}_enc_marshal.py"
-        output_path = choose_output_path(default_output)
-        with open(output_path, 'w') as f:
-            f.write(f"import marshal\nexec(marshal.loads({repr(encrypted)}))")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
-    except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
-
+# Fungsi Enkripsi Zlib
 def encrypt_zlib(file_path):
     try:
         with open(file_path, 'r') as f:
@@ -105,43 +92,148 @@ def encrypt_zlib(file_path):
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(f"import zlib\nexec(zlib.decompress({repr(compressed)}).decode())")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
+        console.print(f"{H2}• {P2}File encrypted and saved as {K2} {output_path}{reset}")
     except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to encrypt: {e}{reset}")
 
-def encrypt_mzb(file_path):
+# Fungsi Enkripsi Marshal
+def encmarshal():
+    file = input(f"{H2}• {P2}Nama file untuk di encrypt: ")
+    fileout = input(f"{H2}• {P2}Output File Name: ")
+    delay_print("• Sedang Encrypting ...")
+    
+    # Membaca konten file yang akan dienkripsi
+    try:
+        with open(file, 'r') as f:
+            fileopen = f.read()
+    except FileNotFoundError:
+        console.print(f"{H2}• {P2}File tidak ditemukan! Pastikan path file benar.{reset}")
+        return
+
+    # Mengompilasi dan mengenkripsi file dengan marshal
+    a = compile(fileopen, "dg", "exec")
+    m = marshal.dumps(a)
+    s = repr(m)
+    
+    # Menyusun kode untuk mengeksekusi marshal yang telah dienkripsi
+    b = """#ngapain bang ke sini
+#mau recode hahaha
+#usaha bang, btw follow github gw
+#https://github.com/Viper404-XD
+
+import marshal
+exec(marshal.loads(""" + s + """))"""
+    
+    time.sleep(3)
+    delay_print("• Encryption Completed...")
+    
+    # Menulis file yang telah dienkripsi
+    with open(fileout, "w") as f_out:
+        f_out.write(b)
+    
+    time.sleep(3)
+    console.print(f"{H2}• {P2}Output File Name ➛ {K2} {fileout}{reset}")
+    move_file(fileout)
+
+# Fungsi Dekripsi Base16
+def decrypt_base16(file_path):
     try:
         with open(file_path, 'r') as f:
-            content = f.read()
-        compiled = compile(content, '<script>', 'exec')
-        encrypted = base64.b64encode(zlib.compress(marshal.dumps(compiled))).decode()
-        default_output = f"{os.path.splitext(file_path)[0]}_enc_mzb.py"
+            content = f.read().replace('exec(base64.b16decode("', '').replace('").decode())', '')
+        decrypted = base64.b16decode(content).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_dec_base16.py"
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
-            f.write(f"import marshal, zlib, base64\nexec(marshal.loads(zlib.decompress(base64.b64decode('{encrypted}'))))")
-        print(f"{green}File encrypted and saved as {output_path}{reset}")
+            f.write(decrypted)
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {output_path}{reset}")
+        move_file(output_path)
     except Exception as e:
-        print(f"{red}Failed to encrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
 
-# Fungsi Dekripsi
+# Fungsi Dekripsi Base32
+def decrypt_base32(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read().replace('exec(base64.b32decode("', '').replace('").decode())', '')
+        decrypted = base64.b32decode(content).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_dec_base32.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(decrypted)
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {output_path}{reset}")
+        move_file(output_path)
+    except Exception as e:
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
+
+# Fungsi Dekripsi Base64
+def decrypt_base64(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = f.read().replace('exec(base64.b64decode("', '').replace('").decode())', '')
+        decrypted = base64.b64decode(content).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_dec_base64.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(decrypted)
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {output_path}{reset}")
+        move_file(output_path)
+    except Exception as e:
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
+
+# Fungsi Dekripsi Zlib
+def decrypt_zlib(file_path):
+    try:
+        with open(file_path, 'r') as f:
+            content = eval(f.read().replace('exec(', '').replace(')', ''))
+        decompressed = zlib.decompress(content).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_dec_zlib.py"
+        output_path = choose_output_path(default_output)
+        with open(output_path, 'w') as f:
+            f.write(decompressed)
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {output_path}{reset}")
+        move_file(output_path)
+    except Exception as e:
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
+
+# Fungsi Dekripsi Marshal
+def decmarshal():
+    file = input(f"{H2}• {P2}Nama file untuk di decrypt: ")
+    fileout = input(f"{H2}• {P2}Output File Name: ")
+    delay_print("• Sedang Decrypting ...")
+    try:
+        with open(file, 'r') as f:
+            content = f.read()
+        start = content.find('exec(marshal.loads(')
+        end = content.find('))', start) + 2
+        encrypted_code = content[start + 18:end - 2]
+        decoded_code = marshal.loads(eval(encrypted_code))
+        with open(fileout, 'w') as f_out:
+            f_out.write(decoded_code.decode())
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {fileout}{reset}")
+        move_file(fileout)
+    except Exception as e:
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
+
+# Fungsi Dekripsi Marshal + Zlib + Base64
 def decrypt_mzb(file_path):
     try:
         with open(file_path, 'r') as f:
             content = f.read()
         content = content.replace('exec(marshal.loads(zlib.decompress(base64.b64decode("', '').replace('"))))', '')
         decrypted = marshal.loads(zlib.decompress(base64.b64decode(content)))
-        default_output = f"{os.path.splitext(file_path)[0]}_dec.py"
+        default_output = f"{os.path.splitext(file_path)[0]}_dec_mzb.py"
         output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(decrypted.decode())
-        print(f"{green}File decrypted and saved as {output_path}{reset}")
+        console.print(f"{H2}• {P2}File decrypted and saved as {K2} {output_path}{reset}")
+        move_file(output_path)
     except Exception as e:
-        print(f"{red}Failed to decrypt: {e}{reset}")
+        console.print(f"{H2}• {P2}Failed to decrypt: {e}{reset}")
 
-# Menu Enkripsi
+# Fungsi menu enkripsi
 def encryption_menu():
     clear()
-    print(f"{cyan}Encryptor Menu{reset}")
+    console.print(f"{H2}Encryptor Menu{reset}")
     print("[1] Encrypt Base16")
     print("[2] Encrypt Base32")
     print("[3] Encrypt Base64")
@@ -157,7 +249,7 @@ def encryption_menu():
     elif choice == "3":
         encrypt_base64(input("Enter the file path: "))
     elif choice == "4":
-        encrypt_marshal(input("Enter the file path: "))
+        encmarshal()
     elif choice == "5":
         encrypt_zlib(input("Enter the file path: "))
     elif choice == "6":
@@ -165,28 +257,43 @@ def encryption_menu():
     elif choice == "0":
         main_menu()
     else:
-        print(f"{red}Invalid choice, try again.{reset}")
+        console.print(f"{H2}Invalid choice, try again.{reset}")
         encryption_menu()
 
-# Menu Dekripsi
+# Fungsi menu dekkripsi
 def decryption_menu():
     clear()
-    print(f"{cyan}Decryptor Menu{reset}")
-    print("[1] Decrypt Marshal + Zlib + Base64")
+    console.print(f"{H2}Decryptor Menu{reset}")
+    print("[1] Decrypt Base16")
+    print("[2] Decrypt Base32")
+    print("[3] Decrypt Base64")
+    print("[4] Decrypt Zlib")
+    print("[5] Decrypt Marshal")
+    print("[6] Decrypt Marshal + Zlib + Base64")
     print("[0] Back")
     choice = input("Choose an option: ")
     if choice == "1":
+        decrypt_base16(input("Enter the file path: "))
+    elif choice == "2":
+        decrypt_base32(input("Enter the file path: "))
+    elif choice == "3":
+        decrypt_base64(input("Enter the file path: "))
+    elif choice == "4":
+        decrypt_zlib(input("Enter the file path: "))
+    elif choice == "5":
+        decmarshal()
+    elif choice == "6":
         decrypt_mzb(input("Enter the file path: "))
     elif choice == "0":
         main_menu()
     else:
-        print(f"{red}Invalid choice, try again.{reset}")
+        console.print(f"{H2}Invalid choice, try again.{reset}")
         decryption_menu()
 
-# Menu Utama
+# Fungsi utama
 def main_menu():
     clear()
-    print(f"{cyan}Python Encryption/Decryption Tool{reset}")
+    console.print(f"{H2}Python Encryption/Decryption Tool{reset}")
     print("[1] Encryption Menu")
     print("[2] Decryption Menu")
     print("[0] Exit")
@@ -198,9 +305,9 @@ def main_menu():
     elif choice == "0":
         sys.exit()
     else:
-        print(f"{red}Invalid choice, try again.{reset}")
+        console.print(f"{H2}Invalid choice, try again.{reset}")
         main_menu()
 
-# Eksekusi Utama
+# Eksekusi utama
 if __name__ == "__main__":
     main_menu()
