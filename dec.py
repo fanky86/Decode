@@ -29,19 +29,19 @@ def delay_print(text, delay=0.01):
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
-# Banner menu
-def banner_enc():
-    print(f"{cyan}Encryptor Menu{reset}")
-
-def banner_dec():
-    print(f"{cyan}Decryptor Menu{reset}")
+# Fungsi untuk memilih lokasi output
+def choose_output_path(default_path):
+    print(f"{yellow}Default output path: {default_path}{reset}")
+    custom_path = input("Enter custom output path or press Enter to use default: ").strip()
+    return custom_path if custom_path else default_path
 
 # Fungsi Enkripsi
 def encrypt_base16(file_path):
     with open(file_path, 'r') as f:
         content = f.read()
     encrypted = base64.b16encode(content.encode()).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_base16.py"
+    default_output = f"{os.path.splitext(file_path)[0]}_enc_base16.py"
+    output_path = choose_output_path(default_output)
     with open(output_path, 'w') as f:
         f.write(f"import base64\nexec(base64.b16decode('{encrypted}').decode())")
     print(f"{green}File encrypted and saved as {output_path}{reset}")
@@ -50,7 +50,8 @@ def encrypt_base32(file_path):
     with open(file_path, 'r') as f:
         content = f.read()
     encrypted = base64.b32encode(content.encode()).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_base32.py"
+    default_output = f"{os.path.splitext(file_path)[0]}_enc_base32.py"
+    output_path = choose_output_path(default_output)
     with open(output_path, 'w') as f:
         f.write(f"import base64\nexec(base64.b32decode('{encrypted}').decode())")
     print(f"{green}File encrypted and saved as {output_path}{reset}")
@@ -59,7 +60,8 @@ def encrypt_base64(file_path):
     with open(file_path, 'r') as f:
         content = f.read()
     encrypted = base64.b64encode(content.encode()).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_base64.py"
+    default_output = f"{os.path.splitext(file_path)[0]}_enc_base64.py"
+    output_path = choose_output_path(default_output)
     with open(output_path, 'w') as f:
         f.write(f"import base64\nexec(base64.b64decode('{encrypted}').decode())")
     print(f"{green}File encrypted and saved as {output_path}{reset}")
@@ -69,7 +71,8 @@ def encrypt_marshal(file_path):
         content = f.read()
     compiled = compile(content, '<script>', 'exec')
     encrypted = marshal.dumps(compiled)
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_marshal.py"
+    default_output = f"{os.path.splitext(file_path)[0]}_enc_marshal.py"
+    output_path = choose_output_path(default_output)
     with open(output_path, 'w') as f:
         f.write(f"import marshal\nexec(marshal.loads({repr(encrypted)}))")
     print(f"{green}File encrypted and saved as {output_path}{reset}")
@@ -78,118 +81,45 @@ def encrypt_zlib(file_path):
     with open(file_path, 'r') as f:
         content = f.read()
     compressed = zlib.compress(content.encode())
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_zlib.py"
+    default_output = f"{os.path.splitext(file_path)[0]}_enc_zlib.py"
+    output_path = choose_output_path(default_output)
     with open(output_path, 'w') as f:
         f.write(f"import zlib\nexec(zlib.decompress({repr(compressed)}).decode())")
     print(f"{green}File encrypted and saved as {output_path}{reset}")
 
 def encrypt_mzb(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read()
-    compiled = compile(content, '<script>', 'exec')
-    encrypted = base64.b64encode(zlib.compress(marshal.dumps(compiled))).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_enc_mzb.py"
-    with open(output_path, 'w') as f:
-        f.write(f"import marshal, zlib, base64\nexec(marshal.loads(zlib.decompress(base64.b64decode('{encrypted}'))))")
-    print(f"{green}File encrypted and saved as {output_path}{reset}")
-
-# Fungsi Dekripsi
-def decrypt_base16(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read().replace('exec(base64.b16decode("', '').replace('").decode())', '')
-    decrypted = base64.b16decode(content).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
-    with open(output_path, 'w') as f:
-        f.write(decrypted)
-    print(f"{green}File decrypted and saved as {output_path}{reset}")
-
-def decrypt_base32(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read().replace('exec(base64.b32decode("', '').replace('").decode())', '')
-    decrypted = base64.b32decode(content).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
-    with open(output_path, 'w') as f:
-        f.write(decrypted)
-    print(f"{green}File decrypted and saved as {output_path}{reset}")
-
-def decrypt_base64(file_path):
-    with open(file_path, 'r') as f:
-        content = f.read().replace('exec(base64.b64decode("', '').replace('").decode())', '')
-    decrypted = base64.b64decode(content).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
-    with open(output_path, 'w') as f:
-        f.write(decrypted)
-    print(f"{green}File decrypted and saved as {output_path}{reset}")
-
-def decrypt_zlib(file_path):
-    with open(file_path, 'r') as f:
-        content = eval(f.read().replace('exec(', '').replace(')', ''))
-    decompressed = zlib.decompress(content).decode()
-    output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
-    with open(output_path, 'w') as f:
-        f.write(decompressed)
-    print(f"{green}File decrypted and saved as {output_path}{reset}")
-
-def decrypt_marshal(file_path):
     try:
         with open(file_path, 'r') as f:
             content = f.read()
-        content = content.replace('exec(marshal.loads(', '').replace('))', '')
-        decrypted = marshal.loads(eval(content))
-        output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
+        compiled = compile(content, '<script>', 'exec')
+        encrypted = base64.b64encode(zlib.compress(marshal.dumps(compiled))).decode()
+        default_output = f"{os.path.splitext(file_path)[0]}_enc_mzb.py"
+        output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
-            f.write(decrypted.decode())
-        print(f"{green}File decrypted and saved as {output_path}{reset}")
+            f.write(f"import marshal, zlib, base64\nexec(marshal.loads(zlib.decompress(base64.b64decode('{encrypted}'))))")
+        print(f"{green}File encrypted and saved as {output_path}{reset}")
     except Exception as e:
-        print(f"{red}Failed to decrypt: {str(e)}{reset}")
+        print(f"{red}Error: {str(e)}{reset}")
 
+# Fungsi Dekripsi
 def decrypt_mzb(file_path):
     try:
         with open(file_path, 'r') as f:
             content = f.read()
         content = content.replace('exec(marshal.loads(zlib.decompress(base64.b64decode("', '').replace('"))))', '')
         decrypted = marshal.loads(zlib.decompress(base64.b64decode(content)))
-        output_path = f"{os.path.splitext(file_path)[0]}_dec.py"
+        default_output = f"{os.path.splitext(file_path)[0]}_dec.py"
+        output_path = choose_output_path(default_output)
         with open(output_path, 'w') as f:
             f.write(decrypted.decode())
         print(f"{green}File decrypted and saved as {output_path}{reset}")
     except Exception as e:
         print(f"{red}Failed to decrypt: {str(e)}{reset}")
 
-# Menu Dekripsi
-def decryption_menu():
-    clear()
-    banner_dec()
-    print("[1] Decrypt Base16")
-    print("[2] Decrypt Base32")
-    print("[3] Decrypt Base64")
-    print("[4] Decrypt Zlib")
-    print("[5] Decrypt Marshal")
-    print("[6] Decrypt Marshal + Zlib + Base64")
-    print("[0] Back")
-    choice = input("Choose an option: ")
-    if choice == "1":
-        decrypt_base16(input("Enter the file path: "))
-    elif choice == "2":
-        decrypt_base32(input("Enter the file path: "))
-    elif choice == "3":
-        decrypt_base64(input("Enter the file path: "))
-    elif choice == "4":
-        decrypt_zlib(input("Enter the file path: "))
-    elif choice == "5":
-        decrypt_marshal(input("Enter the file path: "))
-    elif choice == "6":
-        decrypt_mzb(input("Enter the file path: "))
-    elif choice == "0":
-        main_menu()
-    else:
-        print(f"{red}Invalid choice, try again.{reset}")
-        decryption_menu()
-
 # Menu Enkripsi
 def encryption_menu():
     clear()
-    banner_enc()
+    print(f"{cyan}Encryptor Menu{reset}")
     print("[1] Encrypt Base16")
     print("[2] Encrypt Base32")
     print("[3] Encrypt Base64")
@@ -215,6 +145,21 @@ def encryption_menu():
     else:
         print(f"{red}Invalid choice, try again.{reset}")
         encryption_menu()
+
+# Menu Dekripsi
+def decryption_menu():
+    clear()
+    print(f"{cyan}Decryptor Menu{reset}")
+    print("[6] Decrypt Marshal + Zlib + Base64")
+    print("[0] Back")
+    choice = input("Choose an option: ")
+    if choice == "6":
+        decrypt_mzb(input("Enter the file path: "))
+    elif choice == "0":
+        main_menu()
+    else:
+        print(f"{red}Invalid choice, try again.{reset}")
+        decryption_menu()
 
 # Menu Utama
 def main_menu():
