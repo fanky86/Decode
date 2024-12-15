@@ -11,7 +11,7 @@ download aplikasi termux di playstore atau <a href="https://f-droid.org/en/packa
     cd Decode
     python2 run.py
     or
-    python dec.py
+    python decodev2.py
 
 - Oke sekarang script sudah berhasil di ```install```
 
@@ -24,11 +24,12 @@ sekarang karena script sudah ```diinstall``` tinggal kita jalankan, ketikan peri
     git pull
     python2 run.py
     or
-    python dec.py
+    python decodev2.py
 
 <h5 align="left">informasi:</h5>
 
-untuk python gunakan yang dec.py
+untuk python gunakan yang decodev2.py
+
 untuk python2 gunakan yang run.py
 
 <h5 align="left">catatan:</h5>
