@@ -9,7 +9,6 @@ p = '\x1b[1;37m'
 k = '\x1b[1;33m'
 b = '\x1b[1;34m'
 bm = '\x1b[96m'
-print=""
 raw_input = input()
 try:
     from uncompyle6.main import decompile
