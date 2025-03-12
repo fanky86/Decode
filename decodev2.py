@@ -123,6 +123,43 @@ def encrypt_mzb():
     except Exception as e:
         console.print(Panel(f"Gagal mengenkripsi file: {e}", title="Error", style="red"))
 
+
+import marshal
+import zlib
+import base64
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
+
+HEADER = "# MR.ExceFaN\n# ngapain bang ke sini\n# mau recode hahaha\n# usaha bang, btw follow github gw => MR.ExceFaN\n# https://github.com/fanky86/Decode\n\n"
+
+# Fungsi Dekripsi Marshal + Zlib + Base64
+def decrypt_mzb():
+    file = console.input("[cyan]• Masukkan nama file untuk didekripsi (Marshal + Zlib + Base64): [/cyan]")
+    fileout = console.input("[cyan]• Masukkan nama file output: [/cyan]")
+    console.print(Panel("Sedang mendekripsi file ...", title="Processing", style="yellow"))
+    try:
+        with open(file, 'rb') as f:  # Buka file dalam mode biner
+            content = f.read()
+        # Asumsi konten diawali dengan exec(marshal.loads(zlib.decompress(base64.b64decode(" dan diakhiri dengan ")))))
+        # Hapus bagian tersebut, tapi hanya sekali untuk menghindari perubahan data yang valid
+        start_str = 'exec(marshal.loads(zlib.decompress(base64.b64decode("'
+        end_str = '"))))'
+        if content.startswith(start_str.encode()) and content.endswith(end_str.encode()):
+            content = content[len(start_str):-len(end_str)]
+        # Dekripsi konten
+        decrypted = marshal.loads(zlib.decompress(base64.b64decode(content)))
+        # Tulis konten yang sudah didekripsi ke file output
+        with open(fileout, 'w') as f_out:
+            f_out.write(HEADER + decrypted.decode())
+        console.print(Panel(f"File berhasil didekripsi ke [green]{fileout}[/green]", title="Sukses", style="green"))
+        # Pindahkan file output ke tempat yang sesuai (pastikan ada fungsi `move_file` yang tepat)
+        move_file(fileout)
+    except Exception as e:
+        console.print(Panel(f"Gagal mendekripsi file: {e}", title="Error", style="red"))
+
+
 # Fungsi Dekripsi Marshal + Zlib + Base64
 def decrypt_mzb():
     file = console.input("[cyan]• Masukkan nama file untuk didekripsi (Marshal + Zlib + Base64): [/cyan]")
