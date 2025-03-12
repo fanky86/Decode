@@ -11,13 +11,6 @@ from rich.panel import Panel
 # Warna terminal
 console = Console()
 
-# Header untuk file hasil enkripsi/dekripsi
-HEADER = """# MR.ExceFaN
-# ngapain bang ke sini
-# mau recode hahaha
-# usaha bang, btw follow github gw => MR.ExceFaN
-# https://github.com/fanky86/Decode\n\n"""
-
 # Fungsi untuk teks dengan animasi
 def delay_print(text, delay=0.03):
     for char in text:
@@ -25,6 +18,9 @@ def delay_print(text, delay=0.03):
         sys.stdout.flush()
         time.sleep(delay)
     print()
+
+# Header untuk file hasil enkripsi/dekripsi
+HEADER = "# MR.ExceFaN\n# ngapain bang ke sini\n# mau recode hahaha\n# usaha bang, btw follow github gw => MR.ExceFaN\n# https://github.com/fanky86/Decode\n\n"
 
 # Membersihkan terminal
 def clear():
